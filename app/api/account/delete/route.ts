@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     response.cookies.set('session', '', {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax', // Changed from 'none' to prevent CSRF
       path: '/',
       maxAge: 0,
     });

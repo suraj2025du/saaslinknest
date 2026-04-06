@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users, profiles, subscriptions, analytics, feedbacks, contactSubmissions, adminConfig } from '@/lib/schema';
-import { eq, desc, count, sql, and, gte, lte } from 'drizzle-orm';
+import { eq, desc, count, sql, and, or, gte, lte, like } from 'drizzle-orm';
 import { getSession } from '@/lib/auth';
 
 // Middleware: check admin role
@@ -29,13 +29,23 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '20');
   const search = searchParams.get('search');
-  const sort = searchParams.get('sort') || 'createdAt';
-  const order = searchParams.get('order') || 'desc';
+  let sort = searchParams.get('sort') || 'createdAt';
+  let order = searchParams.get('order') || 'desc';
+
+  // SECURITY: Whitelist allowed sort columns and directions to prevent SQL injection
+  const ALLOWED_SORTS = ['createdAt', 'email', 'name', 'role', 'lastSignedIn'];
+  const ALLOWED_ORDERS = ['asc', 'desc'];
+  if (!ALLOWED_SORTS.includes(sort)) sort = 'createdAt';
+  if (!ALLOWED_ORDERS.includes(order)) order = 'desc';
 
   let whereClause = sql`1=1`;
 
   if (search) {
-    whereClause = sql`(${users.email} LIKE ${`%${search}%`} OR ${users.name} LIKE ${`%${search}%`})`;
+    const searchTerm = `%${search}%`;
+    whereClause = and(
+      like(users.email, searchTerm),
+      or(like(users.name, searchTerm), sql`1=1`)
+    ) as any;
   }
 
   const offset = (page - 1) * limit;

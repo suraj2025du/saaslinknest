@@ -16,6 +16,7 @@ const outfit = Outfit({
 });
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://linkne.st'),
   title: {
     default: 'LinkNest — Smart Link-in-Bio for Creators',
     template: '%s | LinkNest',

@@ -9,10 +9,10 @@ import { sendEmail, passwordResetEmail } from '@/lib/email';
 export async function POST(req: Request) {
   try {
     const ip = await getIP();
-    const { success, error } = await rateLimit(ip, 3); // 3 attempts per minute
+    const { success } = await rateLimit(ip, 3); // 3 attempts per minute
 
     if (!success) {
-      return NextResponse.json({ error }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 
     const { email } = await req.json();

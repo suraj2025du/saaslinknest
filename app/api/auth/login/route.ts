@@ -9,10 +9,10 @@ import { rateLimit, getIP } from '@/lib/rate-limit';
 export async function POST(req: Request) {
   try {
     const ip = await getIP();
-    const { success, error } = await rateLimit(ip, 5); // 5 attempts per minute
+    const { success } = await rateLimit(ip, 5); // 5 attempts per minute
 
     if (!success) {
-      return NextResponse.json({ error }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 
     const body = await req.json();
@@ -24,6 +24,11 @@ export async function POST(req: Request) {
 
     if (!user || !user.password) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    }
+
+    // Prevent login for soft-deleted accounts
+    if (user.deletedAt) {
+      return NextResponse.json({ error: 'Account has been deleted' }, { status: 403 });
     }
 
     const isValid = await comparePassword(password, user.password);

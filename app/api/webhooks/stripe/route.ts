@@ -11,16 +11,22 @@ export async function POST(req: Request) {
   const body = await req.text();
   const signature = (await headers()).get('Stripe-Signature') as string;
 
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('STRIPE_WEBHOOK_SECRET not configured');
+    return NextResponse.json({ error: 'Webhook configuration error' }, { status: 500 });
+  }
+
   let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err: any) {
-    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+    console.error('Webhook verification failed');
+    return NextResponse.json({ error: 'Webhook verification failed' }, { status: 400 });
   }
 
   // Handle checkout session completed

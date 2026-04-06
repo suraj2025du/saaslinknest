@@ -17,26 +17,26 @@ if (!databaseUrl) {
 const hasSslMode = databaseUrl?.includes('sslmode=');
 const cleanUri = databaseUrl?.replace(/(\?|&)sslmode=[^&]+/, '') || '';
 
-// Diagnostic: Check if the host is reachable at all
-if (cleanUri) {
+// Diagnostic: Only run network tests in development to avoid production log noise
+if (cleanUri && process.env.NODE_ENV === 'development') {
   try {
     const url = new URL(cleanUri);
     const host = url.hostname;
     const port = parseInt(url.port || '3306');
 
     console.log(`🔍 DIAGNOSTIC: Testing network reachability to ${host}:${port}...`);
-    
+
     // Check DNS resolution
     dns.lookup(host, (err, address, family) => {
       if (err) {
         console.error(`❌ DNS FAILURE: Could not resolve hostname ${host}: ${err.message}`);
       } else {
         console.log(`✅ DNS SUCCESS: Hostname ${host} resolved to ${address} (IPv${family})`);
-        
+
         // Only test socket if DNS succeeded
         const socket = new net.Socket();
         socket.setTimeout(10000); // 10s for diagnostic
-        
+
         socket.on('connect', () => {
           console.log(`✅ NETWORK SUCCESS: Successfully reached ${host}:${port} over the network.`);
           socket.destroy();
@@ -62,12 +62,12 @@ if (cleanUri) {
 
 const connection = mysql.createPool({
   uri: cleanUri,
-  // If sslmode was present, we enable SSL with rejectUnauthorized: false
-  // which is common for many cloud database providers.
-  ssl: hasSslMode ? { rejectUnauthorized: false } : undefined,
-  connectTimeout: 60000, // 60 seconds for very slow connections
+  ssl: hasSslMode || cleanUri.includes('tidbcloud.com')
+    ? { rejectUnauthorized: false }
+    : undefined,
+  connectTimeout: 60000,
   waitForConnections: true,
-  connectionLimit: 5, // Reduced limit to be safer with small DB instances
+  connectionLimit: 10,
   maxIdle: 5,
   idleTimeout: 60000,
   queueLimit: 0,
@@ -75,22 +75,16 @@ const connection = mysql.createPool({
   keepAliveInitialDelay: 10000,
 });
 
-// Test connection and log errors to help diagnose ETIMEDOUT
-connection.getConnection()
-  .then((conn) => {
-    console.log('🚀 DATABASE: Successfully established a connection pool.');
-    conn.release();
-  })
-  .catch((err) => {
-    console.error('❌ DATABASE CONNECTION ERROR:', err.message);
-    if (err.code === 'ETIMEDOUT') {
-      console.error('🛑 TIMEOUT ERROR: The database did not respond in time.');
-      console.error('This is almost always a FIREWALL issue. Please check your database provider\'s access control settings.');
-    } else if (err.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.error('🛑 AUTH ERROR: Invalid username or password.');
-    } else if (err.code === 'ENOTFOUND') {
-      console.error('🛑 HOST ERROR: The database host could not be found. Check your DATABASE_URL.');
-    }
-  });
+// Only test connection at runtime, not during build
+if (process.env.NEXT_RUNTIME === 'nodejs' && process.env.NODE_ENV !== 'production') {
+  connection.getConnection()
+    .then((conn) => {
+      console.log('✅ Database connection pool ready.');
+      conn.release();
+    })
+    .catch((err) => {
+      console.warn('⚠️ Database connection not available:', err.message);
+    });
+}
 
 export const db = drizzle(connection, { schema, mode: 'default' });

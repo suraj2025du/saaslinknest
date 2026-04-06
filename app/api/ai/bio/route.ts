@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth';
 import { generateBio } from '@/lib/ai';
 
 export async function POST(req: Request) {
   try {
+    // SECURITY: Require authentication to prevent AI credit abuse
+    const session = await getSession();
+    if (!session?.userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { name, profession, interests, currentBio, context } = await req.json();
 
     if (!name) {

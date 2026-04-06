@@ -68,9 +68,9 @@ export async function POST(req: NextRequest) {
     const validTypes = ['info', 'warning', 'success', 'error'];
     const notificationType = validTypes.includes(type) ? type : 'info';
 
-    // Allow creating notifications for other users (e.g., admin actions)
-    // Otherwise default to current user
-    const userId = targetUserId || session.userId;
+    // SECURITY: Only admins can create notifications for other users
+    const isAdmin = session.role === 'admin';
+    const userId = (isAdmin && targetUserId) ? targetUserId : session.userId;
 
     const [newNotification] = await db
       .insert(notifications)

@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { verifyTwoFactorToken } from '@/lib/two-factor';
+import { decryptSecret } from '@/lib/encryption';
 
 export async function POST(req: Request) {
   try {
@@ -33,8 +34,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found or 2FA not enabled' }, { status: 404 });
     }
 
-    // Verify 2FA token
-    const isValid = verifyTwoFactorToken(user.twoFactorSecret, token);
+    // Decrypt stored secret before verification (SECURITY FIX C3)
+    const decryptedSecret = decryptSecret(user.twoFactorSecret);
+    const isValid = verifyTwoFactorToken(decryptedSecret, token);
 
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid 2FA code' }, { status: 400 });

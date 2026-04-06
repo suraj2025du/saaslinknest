@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     } = body;
 
     const existingProfile = await db.query.profiles.findFirst({
-      where: eq(profiles.userId, session.id as number),
+      where: eq(profiles.userId, session.userId as number),
     });
 
     // If no profile owned by user, check team access
@@ -32,13 +32,13 @@ export async function POST(req: Request) {
     if (!existingProfile) {
       const teamMembership = await db.query.teamMembers.findFirst({
         where: and(
-          eq(teamMembers.userId, session.id as number),
+          eq(teamMembers.userId, session.userId as number),
           eq(teamMembers.status, 'active'),
         ),
       });
 
       if (teamMembership) {
-        const canEdit = await canEditProfile(session.id as number, teamMembership.profileId);
+        const canEdit = await canEditProfile(session.userId as number, teamMembership.profileId);
         if (canEdit) {
           profile = await db.query.profiles.findFirst({
             where: eq(profiles.id, teamMembership.profileId),
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
     // Check edit permission (owner or editor)
     const hasEditAccess = session.id === profile.userId ||
-      await canEditProfile(session.id as number, profile.id);
+      await canEditProfile(session.userId as number, profile.id);
 
     if (!hasEditAccess) {
       return NextResponse.json({ error: 'You do not have permission to edit this profile' }, { status: 403 });

@@ -1,6 +1,5 @@
 /**
- * LinkNest Database Setup Script
- * Automatically creates all 17 tables in TiDB Cloud
+ * LinkNest Complete Database Setup Script (17 Tables)
  */
 
 const mysql = require('mysql2/promise');
@@ -11,24 +10,23 @@ async function setupDatabase() {
   let connection;
 
   try {
-    // Connect to database
     connection = await mysql.createConnection({
       host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
       port: 4000,
       user: '4Fxmi6opzQhfZTf.root',
       password: 'wEqBphspHCxG4xWc',
       database: 'test',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: { rejectUnauthorized: false },
     });
 
     console.log('✅ Connected to TiDB Cloud successfully!\n');
-    console.log('📝 Creating database tables...\n');
+    console.log('📝 Creating/Updating database tables...\n');
 
     // Drop existing tables
-    console.log('🗑️  Dropping existing tables (if any)...');
+    console.log('🗑️  Dropping existing tables...');
     const dropTables = [
+      'DROP TABLE IF EXISTS `transactions`',
+      'DROP TABLE IF EXISTS `payment_gateways`',
       'DROP TABLE IF EXISTS `rate_limits`',
       'DROP TABLE IF EXISTS `coupons`',
       'DROP TABLE IF EXISTS `invoices`',
@@ -46,30 +44,22 @@ async function setupDatabase() {
       'DROP TABLE IF EXISTS `admin_config`',
     ];
 
-    for (const sql of dropTables) {
-      await connection.execute(sql);
-    }
+    for (const sql of dropTables) await connection.execute(sql);
     console.log('✅ Existing tables dropped\n');
 
     // Create tables
-    console.log('🏗️  Creating new tables...\n');
-
     const createTables = [
-      // 1. Users table
       `CREATE TABLE \`users\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        \`open_id\` VARCHAR(255),
-        \`name\` VARCHAR(255),
-        \`email\` VARCHAR(255) UNIQUE,
-        \`password\` VARCHAR(255),
+        \`open_id\` VARCHAR(255), \`name\` VARCHAR(255),
+        \`email\` VARCHAR(255) UNIQUE, \`password\` VARCHAR(255),
         \`login_method\` VARCHAR(50),
         \`role\` ENUM('user', 'admin') DEFAULT 'user',
         \`stripe_customer_id\` VARCHAR(255),
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         \`last_signed_in\` TIMESTAMP,
-        \`reset_token\` VARCHAR(255),
-        \`reset_token_expiry\` TIMESTAMP,
+        \`reset_token\` VARCHAR(255), \`reset_token_expiry\` TIMESTAMP,
         \`email_verified\` BOOLEAN DEFAULT FALSE,
         \`email_verification_token\` VARCHAR(255),
         \`two_factor_enabled\` BOOLEAN DEFAULT FALSE,
@@ -78,17 +68,13 @@ async function setupDatabase() {
         \`deleted_at\` TIMESTAMP
       )`,
 
-      // 2. Profiles table
       `CREATE TABLE \`profiles\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
         \`username\` VARCHAR(255) UNIQUE,
-        \`bio\` TEXT,
-        \`avatar\` TEXT,
-        \`theme\` VARCHAR(50),
-        \`background_color\` VARCHAR(50),
-        \`gradient_color_1\` VARCHAR(50),
-        \`gradient_color_2\` VARCHAR(50),
+        \`bio\` TEXT, \`avatar\` TEXT,
+        \`theme\` VARCHAR(50), \`background_color\` VARCHAR(50),
+        \`gradient_color_1\` VARCHAR(50), \`gradient_color_2\` VARCHAR(50),
         \`gradient_direction\` VARCHAR(50),
         \`button_style\` VARCHAR(50),
         \`font_family\` VARCHAR(50),
@@ -96,34 +82,28 @@ async function setupDatabase() {
         \`custom_domain\` VARCHAR(255),
         \`custom_domain_verified\` BOOLEAN DEFAULT FALSE,
         \`domain_verification_token\` VARCHAR(255),
-        \`seo_title\` VARCHAR(255),
-        \`seo_description\` TEXT,
+        \`seo_title\` VARCHAR(255), \`seo_description\` TEXT,
         \`seo_keywords\` TEXT,
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 3. Links table
       `CREATE TABLE \`links\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
-        \`title\` VARCHAR(255),
-        \`url\` VARCHAR(500),
-        \`description\` TEXT,
-        \`position\` INT,
+        \`title\` VARCHAR(255), \`url\` VARCHAR(500),
+        \`description\` TEXT, \`position\` INT,
         \`visible\` BOOLEAN DEFAULT TRUE,
         \`type\` VARCHAR(50) DEFAULT 'link',
         \`password\` VARCHAR(255),
-        \`scheduled_at\` TIMESTAMP,
-        \`scheduled_end_at\` TIMESTAMP,
+        \`scheduled_at\` TIMESTAMP, \`scheduled_end_at\` TIMESTAMP,
         \`clicks\` INT DEFAULT 0,
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 4. Subscriptions table
       `CREATE TABLE \`subscriptions\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
@@ -139,19 +119,16 @@ async function setupDatabase() {
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 5. Analytics table
       `CREATE TABLE \`analytics\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
         \`link_id\` BIGINT,
         \`event_type\` ENUM('view', 'click'),
         \`device\` ENUM('mobile', 'tablet', 'desktop'),
-        \`country\` VARCHAR(100),
-        \`referrer\` VARCHAR(255),
+        \`country\` VARCHAR(100), \`referrer\` VARCHAR(255),
         \`timestamp\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         \`session_id\` VARCHAR(255),
-        \`user_agent\` VARCHAR(500),
-        \`ip\` VARCHAR(50),
+        \`user_agent\` VARCHAR(500), \`ip\` VARCHAR(50),
         INDEX \`analytics_user_id_idx\` (\`user_id\`),
         INDEX \`analytics_timestamp_idx\` (\`timestamp\`),
         INDEX \`analytics_link_id_idx\` (\`link_id\`),
@@ -159,7 +136,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`link_id\`) REFERENCES \`links\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 6. Admin config table
       `CREATE TABLE \`admin_config\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`key\` VARCHAR(255) UNIQUE,
@@ -169,7 +145,6 @@ async function setupDatabase() {
         \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )`,
 
-      // 7. Feedbacks table
       `CREATE TABLE \`feedbacks\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT,
@@ -181,7 +156,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 8. Blog posts table
       `CREATE TABLE \`blog_posts\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`slug\` VARCHAR(255) UNIQUE NOT NULL,
@@ -202,7 +176,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`author_id\`) REFERENCES \`users\`(\`id\`)
       )`,
 
-      // 9. Newsletter subscribers table
       `CREATE TABLE \`newsletter_subscribers\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`email\` VARCHAR(255) UNIQUE NOT NULL,
@@ -212,7 +185,6 @@ async function setupDatabase() {
         UNIQUE INDEX \`newsletter_email_idx\` (\`email\`)
       )`,
 
-      // 10. Contact submissions table
       `CREATE TABLE \`contact_submissions\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`name\` VARCHAR(255),
@@ -223,7 +195,6 @@ async function setupDatabase() {
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )`,
 
-      // 11. Notifications table
       `CREATE TABLE \`notifications\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
@@ -238,7 +209,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 12. Team members table
       `CREATE TABLE \`team_members\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`profile_id\` BIGINT NOT NULL,
@@ -255,7 +225,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 13. Rate limits table
       `CREATE TABLE \`rate_limits\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`key\` VARCHAR(255) UNIQUE NOT NULL,
@@ -266,7 +235,6 @@ async function setupDatabase() {
         INDEX \`rate_limits_reset_at_idx\` (\`reset_at\`)
       )`,
 
-      // 14. Invoices table
       `CREATE TABLE \`invoices\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`user_id\` BIGINT NOT NULL,
@@ -280,7 +248,6 @@ async function setupDatabase() {
         FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
       )`,
 
-      // 15. Coupons table
       `CREATE TABLE \`coupons\` (
         \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
         \`code\` VARCHAR(50) UNIQUE NOT NULL,
@@ -294,50 +261,58 @@ async function setupDatabase() {
         \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE INDEX \`coupons_code_idx\` (\`code\`)
       )`,
+
+      `CREATE TABLE \`payment_gateways\` (
+        \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        \`provider\` VARCHAR(50) NOT NULL,
+        \`is_active\` BOOLEAN DEFAULT FALSE,
+        \`public_key\` VARCHAR(500),
+        \`secret_key\` VARCHAR(500),
+        \`webhook_secret\` VARCHAR(500),
+        \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE INDEX \`gateways_provider_idx\` (\`provider\`)
+      )`,
+
+      `CREATE TABLE \`transactions\` (
+        \`id\` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        \`user_id\` BIGINT,
+        \`gateway\` VARCHAR(50),
+        \`payment_id\` VARCHAR(255),
+        \`amount\` INT,
+        \`currency\` VARCHAR(10) DEFAULT 'usd',
+        \`status\` VARCHAR(50),
+        \`plan\` VARCHAR(50),
+        \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX \`transactions_user_id_idx\` (\`user_id\`),
+        INDEX \`transactions_status_idx\` (\`status\`)
+      )`,
     ];
 
     const tableNames = [
-      'users',
-      'profiles',
-      'links',
-      'subscriptions',
-      'analytics',
-      'admin_config',
-      'feedbacks',
-      'blog_posts',
-      'newsletter_subscribers',
-      'contact_submissions',
-      'notifications',
-      'team_members',
-      'rate_limits',
-      'invoices',
-      'coupons',
+      'users', 'profiles', 'links', 'subscriptions', 'analytics',
+      'admin_config', 'feedbacks', 'blog_posts', 'newsletter_subscribers',
+      'contact_submissions', 'notifications', 'team_members', 'rate_limits',
+      'invoices', 'coupons', 'payment_gateways', 'transactions',
     ];
 
     for (let i = 0; i < createTables.length; i++) {
       await connection.execute(createTables[i]);
-      console.log(`✅ Table ${i + 1}/15: ${tableNames[i]}`);
+      console.log(`✅ Table ${i + 1}/17: ${tableNames[i]}`);
     }
 
     console.log('\n' + '='.repeat(60));
-    console.log('🎉 SUCCESS! All 15 database tables created!');
+    console.log('🎉 SUCCESS! All 17 database tables created!');
     console.log('='.repeat(60));
-    console.log('\n📊 Tables Created:');
-    tableNames.forEach((name, i) => console.log(`   ${i + 1}. ${name}`));
-    console.log('\n✅ Database is ready to use!');
-    console.log('🚀 Restart your server: npm run dev');
-    console.log('🌐 Visit: http://localhost:3000\n');
+    console.log('\n📊 Super Admin Tables Added:');
+    console.log('   16. payment_gateways (Stripe/Razorpay keys)');
+    console.log('   17. transactions (Payment logs)');
+    console.log('\n✅ Database is ready! Restart your server now.\n');
 
   } catch (error) {
-    console.error('\n❌ Error setting up database:');
-    console.error(error.message);
-    console.error('\nPlease check your TiDB Cloud connection and try again.');
+    console.error('\n❌ Error:', error.message);
   } finally {
-    if (connection) {
-      await connection.end();
-    }
+    if (connection) await connection.end();
   }
 }
 
-// Run the setup
 setupDatabase();

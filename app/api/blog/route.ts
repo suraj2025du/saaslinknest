@@ -155,7 +155,9 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
+    // SECURITY: Whitelist allowed fields to prevent arbitrary column injection
     const { slug, title, excerpt, content, coverImage, published, tags, seoTitle, seoDescription } = body;
+    const allowedFields = { slug, title, excerpt, content, coverImage, published, tags, seoTitle, seoDescription };
 
     if (!slug || !title || !content) {
       return NextResponse.json(

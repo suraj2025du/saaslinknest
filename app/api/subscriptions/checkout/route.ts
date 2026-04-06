@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         couponId: validatedCouponId || '',
       },
       customer_email: user[0].email || undefined,
-      allow_promotion_codes: true,
+      allow_promotion_codes: false, // Use internal coupon system only
       billing_address_collection: 'auto',
       ...(discounts && discounts.length > 0 ? { discounts } : {}),
     });

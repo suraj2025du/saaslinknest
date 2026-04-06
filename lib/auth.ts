@@ -2,10 +2,14 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET || 'fallback-secret-change-me');
+const SECRET_KEY = process.env.AUTH_SECRET;
+if (!SECRET_KEY) {
+  throw new Error('❌ FATAL: AUTH_SECRET environment variable is required. Please set a secure random string.');
+}
+const SECRET = new TextEncoder().encode(SECRET_KEY);
 
 export async function hashPassword(password: string) {
-  return await bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 12); // OWASP 2024 recommendation
 }
 
 export async function comparePassword(password: string, hash: string) {
@@ -42,7 +46,7 @@ export async function setSession(payload: any) {
   cookieStore.set('session', token, {
     httpOnly: true,
     secure: true,
-    sameSite: 'none',
+    sameSite: 'lax', // Changed from 'none' to prevent CSRF
     path: '/',
     maxAge: 60 * 60 * 24 * 30, // 30 days
   });

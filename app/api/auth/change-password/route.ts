@@ -38,6 +38,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
+      return NextResponse.json(
+        { error: 'Password must contain uppercase, lowercase, and a number' },
+        { status: 400 }
+      );
+    }
+
     // Get user
     const user = await db
       .select()

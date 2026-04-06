@@ -1,25 +1,9 @@
-import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+/**
+ * SECURITY: This file re-exports the database-backed persistent rate limiter.
+ * All routes importing from '@/lib/rate-limit' will now use the DB-backed version
+ * instead of the weak in-memory Map version.
+ * 
+ * This prevents rate limit bypass in serverless environments (Vercel, AWS Lambda).
+ */
 
-const rateLimitMap = new Map<string, { count: number, resetAt: number }>();
-
-export async function rateLimit(ip: string, limit: number = 60, windowMs: number = 60000) {
-  const now = Date.now();
-  const rateLimit = rateLimitMap.get(ip);
-
-  if (rateLimit && now < rateLimit.resetAt) {
-    if (rateLimit.count >= limit) {
-      return { success: false, error: 'Too many requests' };
-    }
-    rateLimit.count++;
-  } else {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
-  }
-
-  return { success: true };
-}
-
-export async function getIP() {
-  const headerList = await headers();
-  return headerList.get('x-forwarded-for') || 'unknown';
-}
+export { rateLimit, getIP, cleanupExpiredRateLimits } from './rate-limit-persistent';

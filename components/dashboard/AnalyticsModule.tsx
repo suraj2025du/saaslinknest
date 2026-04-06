@@ -20,7 +20,8 @@ import {
   Tablet,
   Filter,
   ChevronDown,
-  Link as LinkIcon
+  Link as LinkIcon,
+  BarChart3
 } from 'lucide-react';
 import {
   AreaChart,
@@ -255,6 +256,17 @@ export const AnalyticsModule = () => {
             />
             <p className="text-xs font-black text-slate-500 uppercase tracking-widest animate-pulse">Updating Analytics...</p>
           </motion.div>
+        ) : !data ? (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="premium-card p-12 rounded-[2.5rem] text-center"
+          >
+            <BarChart3 className="w-16 h-16 text-slate-700 mx-auto mb-6 opacity-20" />
+            <h3 className="text-xl font-black text-white mb-2">No Analytics Data Yet</h3>
+            <p className="text-sm text-slate-400 font-medium">Share your profile link to start getting views and clicks!</p>
+          </motion.div>
         ) : (
           <motion.div
             key="content"
@@ -265,7 +277,7 @@ export const AnalyticsModule = () => {
           >
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {data.stats.map((stat: any, i: number) => (
+              {(data?.stats || []).map((stat: any, i: number) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
@@ -309,7 +321,7 @@ export const AnalyticsModule = () => {
 
                 <div className="flex-1 min-h-[300px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data.chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <AreaChart data={data?.chartData || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="var(--color-brand-primary)" stopOpacity={0.3} />
@@ -348,7 +360,7 @@ export const AnalyticsModule = () => {
                 <div className="premium-card p-8 rounded-[2.5rem]">
                   <h3 className="text-xl font-black text-white tracking-tight mb-8">Top Countries</h3>
                   <div className="space-y-6">
-                    {data.countries.map((c: any) => (
+                    {(data?.countries || []).map((c: any) => (
                       <div key={c.country} className="space-y-2">
                         <div className="flex justify-between text-sm font-black">
                           <div className="flex items-center gap-2">
@@ -367,7 +379,7 @@ export const AnalyticsModule = () => {
                         </div>
                       </div>
                     ))}
-                    {data.countries.length === 0 && (
+                    {(data?.countries || []).length === 0 && (
                       <div className="py-12 text-center">
                         <Globe className="w-12 h-12 text-slate-700 mx-auto mb-4 opacity-20" />
                         <p className="text-xs font-black text-slate-500 uppercase tracking-widest">No data for this filter</p>

@@ -8,16 +8,18 @@ import { z } from 'zod';
 
 const resetSchema = z.object({
   token: z.string(),
-  password: z.string().min(8),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain uppercase, lowercase, and a number'),
 });
 
 export async function POST(req: Request) {
   try {
     const ip = await getIP();
-    const { success, error } = await rateLimit(ip, 5); // 5 attempts per minute
+    const { success } = await rateLimit(ip, 5); // 5 attempts per minute
 
     if (!success) {
-      return NextResponse.json({ error }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 
     const body = await req.json();

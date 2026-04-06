@@ -47,7 +47,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userId } = await resolveLinkUserId(session.id as number);
+    const { userId } = await resolveLinkUserId(session.userId as number);
 
     const userLinks = await db.query.links.findMany({
       where: eq(links.userId, userId),
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userId, isTeamEditor } = await resolveLinkUserId(session.id as number);
+    const { userId, isTeamEditor } = await resolveLinkUserId(session.userId as number);
 
     const body = await req.json();
     const { title, url, visible, scheduledAt, scheduledEndAt } = body;

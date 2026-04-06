@@ -11,7 +11,7 @@ export async function GET() {
   }
 
   const profile = await db.query.profiles.findFirst({
-    where: eq(profiles.userId, session.id as number),
+    where: eq(profiles.userId, session.userId as number),
   });
 
   return NextResponse.json({ 

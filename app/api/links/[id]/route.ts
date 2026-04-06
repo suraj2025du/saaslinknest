@@ -67,7 +67,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       }
     }
 
-    const linkUserId = await resolveLinkUserId(session.id as number);
+    const linkUserId = await resolveLinkUserId(session.userId as number);
 
     const result = await db.update(links)
       .set({
@@ -104,7 +104,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     }
 
     const { id } = await params;
-    const linkUserId = await resolveLinkUserId(session.id as number);
+    const linkUserId = await resolveLinkUserId(session.userId as number);
 
     const result = await db.delete(links)
       .where(and(

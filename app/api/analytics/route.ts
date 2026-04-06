@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     startDate.setDate(startDate.getDate() - days);
 
     const baseWhere = [
-      eq(analytics.userId, session.id as number),
+      eq(analytics.userId, session.userId as number),
       gte(analytics.timestamp, startDate)
     ];
 

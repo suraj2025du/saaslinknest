@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     }
 
     const profile = await db.query.profiles.findFirst({
-      where: eq(profiles.userId, session.id as number),
+      where: eq(profiles.userId, session.userId as number),
     });
 
     if (!profile) {
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         domainVerificationToken: verificationToken,
         updatedAt: new Date(),
       })
-      .where(eq(profiles.userId, session.id as number));
+      .where(eq(profiles.userId, session.userId as number));
 
     return NextResponse.json({
       success: true,

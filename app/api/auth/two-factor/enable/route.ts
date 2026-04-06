@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { verifyTwoFactorToken } from '@/lib/two-factor';
+import { encryptSecret } from '@/lib/encryption';
 
 export async function POST(req: Request) {
   try {
@@ -38,18 +39,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 });
     }
 
-    // Enable 2FA and save backup codes
+    // Encrypt 2FA secret and backup codes before storing
+    const encryptedSecret = encryptSecret(secret);
+    const encryptedBackupCodes = encryptSecret(JSON.stringify(backupCodes));
+
+    // Enable 2FA with encrypted data
     await db.update(users)
       .set({
         twoFactorEnabled: true,
-        twoFactorSecret: secret,
-        backupCodes: JSON.stringify(backupCodes), // Store encrypted backup codes
+        twoFactorSecret: encryptedSecret,
+        backupCodes: encryptedBackupCodes,
       })
       .where(eq(users.id, parseInt(session.userId as string)));
 
     return NextResponse.json({
       success: true,
-      message: '2FA enabled successfully',
+      message: '2FA enabled successfully (encrypted at rest)',
       backupCodes,
     });
   } catch (error) {

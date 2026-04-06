@@ -79,12 +79,15 @@ export async function GET(req: Request) {
 
     await setSession({ userId: user.id, email: user.email, role: user.role });
 
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const validUrl = appUrl.match(/^https?:\/\/[a-zA-Z0-9.-]+(:\d+)?$/) ? appUrl : 'http://localhost:3000';
+
     return new NextResponse(`
       <html>
         <body>
           <script>
             if (window.opener) {
-              window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '*');
+              window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS' }, '${appUrl}');
               window.close();
             } else {
               window.location.href = '/dashboard';
@@ -98,16 +101,18 @@ export async function GET(req: Request) {
     });
   } catch (error: any) {
     console.error('Google OAuth error:', error);
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const validUrl = appUrl.match(/^https?:\/\/[a-zA-Z0-9.-]+(:\d+)?$/) ? appUrl : 'http://localhost:3000';
     if (error.code === 'ETIMEDOUT' || error.message?.includes('ETIMEDOUT')) {
       return new NextResponse(`
         <html>
           <body>
             <script>
               if (window.opener) {
-                window.opener.postMessage({ 
-                  type: 'OAUTH_AUTH_ERROR', 
-                  error: 'Database connection timeout. Please check your database firewall/allowlist settings.' 
-                }, '*');
+                window.opener.postMessage({
+                  type: 'OAUTH_AUTH_ERROR',
+                  error: 'Database connection timeout. Please check your database firewall/allowlist settings.'
+                }, '${appUrl}');
               }
             </script>
             <div style="font-family: sans-serif; padding: 20px; color: #ef4444;">

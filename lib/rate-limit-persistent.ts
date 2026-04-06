@@ -1,6 +1,6 @@
 import { db } from './db';
 import { rateLimits } from './schema';
-import { eq, gt, and } from 'drizzle-orm';
+import { eq, gt, lt, and } from 'drizzle-orm';
 
 /**
  * Persistent rate limiter using database storage
@@ -94,22 +94,29 @@ function rateLimitFallback(
  */
 export async function cleanupExpiredRateLimits() {
   try {
-    await db.delete(rateLimits).where(gt(rateLimits.resetAt, new Date()));
+    await db.delete(rateLimits).where(lt(rateLimits.resetAt, new Date()));
   } catch (error) {
     // Ignore cleanup errors
   }
 }
 
-export async function getIP(request?: Request): Promise<string> {
-  if (!request) return 'unknown';
+/**
+ * Secure IP extraction:
+ * 1. x-real-ip first (set by Vercel/Cloudflare trusted proxy)
+ * 2. First IP from x-forwarded-for chain (real client)
+ * 3. Fallback to localhost
+ */
+export async function getIP(): Promise<string> {
+  const { headers: headersList } = await import('next/headers');
+  const headers = await headersList();
 
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-
-  const realIp = request.headers.get('x-real-ip');
+  const realIp = headers.get('x-real-ip');
   if (realIp) return realIp;
 
-  return 'unknown';
+  const forwardedFor = headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+
+  return '127.0.0.1';
 }

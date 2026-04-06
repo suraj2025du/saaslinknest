@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET || 'fallback-secret-change-me');
+// SECURITY: Fatal error if AUTH_SECRET is missing
+if (!process.env.AUTH_SECRET) {
+  throw new Error('❌ FATAL: AUTH_SECRET environment variable is required. Set a secure random string.');
+}
+const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -13,6 +17,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';");
 
   const token = request.cookies.get('session')?.value;
 

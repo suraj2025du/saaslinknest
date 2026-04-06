@@ -24,7 +24,7 @@ export const users = mysqlTable('users', {
 
 export const profiles = mysqlTable('profiles', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   username: varchar('username', { length: 255 }).unique(),
   bio: text('bio'),
   avatar: text('avatar'),
@@ -48,7 +48,7 @@ export const profiles = mysqlTable('profiles', {
 
 export const links = mysqlTable('links', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }),
   url: varchar('url', { length: 500 }),
   description: text('description'),
@@ -65,7 +65,7 @@ export const links = mysqlTable('links', {
 
 export const subscriptions = mysqlTable('subscriptions', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   plan: mysqlEnum('plan', ['free', 'premium', 'lifetime']).default('free'),
   status: mysqlEnum('status', ['active', 'cancelled', 'expired']).default('active'),
   stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
@@ -79,8 +79,8 @@ export const subscriptions = mysqlTable('subscriptions', {
 
 export const analytics = mysqlTable('analytics', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  linkId: serial('link_id').references(() => links.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  linkId: int('link_id').references(() => links.id, { onDelete: 'cascade' }),
   eventType: mysqlEnum('event_type', ['view', 'click']),
   device: mysqlEnum('device', ['mobile', 'tablet', 'desktop']),
   country: varchar('country', { length: 100 }),
@@ -106,7 +106,7 @@ export const adminConfig = mysqlTable('admin_config', {
 
 export const feedbacks = mysqlTable('feedbacks', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').references(() => users.id, { onDelete: 'cascade' }),
   email: varchar('email', { length: 255 }),
   type: varchar('type', { length: 50 }),
   message: text('message').notNull(),
@@ -122,7 +122,7 @@ export const blogPosts = mysqlTable('blog_posts', {
   excerpt: text('excerpt'),
   content: text('content').notNull(),
   coverImage: text('cover_image'),
-  authorId: serial('author_id').references(() => users.id),
+  authorId: int('author_id').references(() => users.id),
   published: boolean('published').default(false),
   publishedAt: timestamp('published_at'),
   seoTitle: varchar('seo_title', { length: 255 }),
@@ -160,7 +160,7 @@ export const contactSubmissions = mysqlTable('contact_submissions', {
 // Notifications table
 export const notifications = mysqlTable('notifications', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }).notNull(),
   message: text('message').notNull(),
   type: varchar('type', { length: 50 }).default('info'), // info, warning, success, error
@@ -175,8 +175,8 @@ export const notifications = mysqlTable('notifications', {
 // Team members table
 export const teamMembers = mysqlTable('team_members', {
   id: serial('id').primaryKey(),
-  profileId: serial('profile_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
-  userId: serial('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  profileId: int('profile_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  userId: int('user_id').references(() => users.id, { onDelete: 'cascade' }),
   email: varchar('email', { length: 255 }), // for invites before signup
   role: mysqlEnum('role', ['owner', 'editor', 'viewer']).default('viewer'),
   status: mysqlEnum('status', ['pending', 'active', 'revoked']).default('pending'),
@@ -203,7 +203,7 @@ export const rateLimits = mysqlTable('rate_limits', {
 // Invoices table
 export const invoices = mysqlTable('invoices', {
   id: serial('id').primaryKey(),
-  userId: serial('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: int('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   stripeInvoiceId: varchar('stripe_invoice_id', { length: 255 }),
   amount: int('amount'), // in cents
   currency: varchar('currency', { length: 10 }).default('usd'),
@@ -228,5 +228,34 @@ export const coupons = mysqlTable('coupons', {
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
   codeIdx: uniqueIndex('coupons_code_idx').on(table.code),
+}));
+
+// Payment Gateways table (Stripe/Razorpay keys management)
+export const paymentGateways = mysqlTable('payment_gateways', {
+  id: serial('id').primaryKey(),
+  provider: varchar('provider', { length: 50 }).notNull(),
+  isActive: boolean('is_active').default(false),
+  publicKey: varchar('public_key', { length: 500 }),
+  secretKey: varchar('secret_key', { length: 500 }),
+  webhookSecret: varchar('webhook_secret', { length: 500 }),
+  updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),
+}, (table) => ({
+  providerIdx: uniqueIndex('gateways_provider_idx').on(table.provider),
+}));
+
+// Transactions log table
+export const transactions = mysqlTable('transactions', {
+  id: serial('id').primaryKey(),
+  userId: serial('user_id').references(() => users.id),
+  gateway: varchar('gateway', { length: 50 }),
+  paymentId: varchar('payment_id', { length: 255 }),
+  amount: int('amount'),
+  currency: varchar('currency', { length: 10 }).default('usd'),
+  status: varchar('status', { length: 50 }),
+  plan: varchar('plan', { length: 50 }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('transactions_user_id_idx').on(table.userId),
+  statusIdx: index('transactions_status_idx').on(table.status),
 }));
 

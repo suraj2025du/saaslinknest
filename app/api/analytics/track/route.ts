@@ -10,10 +10,10 @@ import { checkMilestones, sendMilestoneEmail, trackMilestone } from '@/lib/miles
 export async function POST(req: Request) {
   try {
     const ip = await getIP();
-    const { success, error } = await rateLimit(`track:${ip}`, 30, 60000);
+    const { success } = await rateLimit(`track:${ip}`, 30, 60000);
 
     if (!success) {
-      return NextResponse.json({ error }, { status: 429 });
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 
     const body = await req.json();

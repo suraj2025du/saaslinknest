@@ -1,14 +1,21 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_PORT === '465',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+// Initialize Resend
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
+const FROM_EMAIL = process.env.FROM_EMAIL || 'LinkNest <onboarding@resend.dev>';
+
+// HTML escape user input to prevent XSS in emails
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 export async function sendEmail({
   to,
@@ -21,14 +28,17 @@ export async function sendEmail({
   html: string;
   text?: string;
 }) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('SMTP not configured, skipping email send');
-    return { success: false, error: 'SMTP not configured' };
+  if (!resend) {
+    console.warn('📧 Resend not configured (RESEND_API_KEY missing). Email not sent.');
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[DEV EMAIL] To: ${to} | Subject: ${subject}`);
+    }
+    return { success: false, error: 'Resend not configured' };
   }
 
   try {
-    await transporter.sendMail({
-      from: `"LinkNest" <${process.env.SMTP_USER}>`,
+    await resend.emails.send({
+      from: FROM_EMAIL,
       to,
       subject,
       html,
@@ -36,10 +46,14 @@ export async function sendEmail({
     });
     return { success: true };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('Failed to send email via Resend:', error);
     return { success: false, error: String(error) };
   }
 }
+
+// ==========================================
+// Email Templates
+// ==========================================
 
 export function welcomeEmail(name: string) {
   return {
@@ -117,23 +131,28 @@ export function subscriptionConfirmationEmail(plan: string) {
 }
 
 export function contactFormConfirmationEmail(name: string) {
+  const safeName = escapeHtml(name);
   return {
     subject: 'We Received Your Message - LinkNest',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #7C3AED;">Message Received</h1>
-        <p>Hi ${name},</p>
+        <p>Hi ${safeName},</p>
         <p>Thank you for contacting us! We've received your message and will get back to you within 24 hours.</p>
         <p>In the meantime, check out our <a href="${process.env.APP_URL}/faq">FAQ</a> for quick answers.</p>
       </div>
     `,
-    text: `Hi ${name}, we received your message and will respond within 24 hours.`,
+    text: `Hi ${safeName}, we received your message and will respond within 24 hours.`,
   };
 }
 
 export function contactFormAdminNotification(name: string, email: string, subject: string, message: string) {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeSubject = escapeHtml(subject);
+  const safeMessage = escapeHtml(message);
   return {
-    subject: `[LinkNest Contact] ${subject || 'New Contact Submission'}`,
+    subject: `[LinkNest Contact] ${safeSubject || 'New Contact Submission'}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #7C3AED;">New Contact Form Submission</h1>
@@ -141,52 +160,55 @@ export function contactFormAdminNotification(name: string, email: string, subjec
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 120px;">Name:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${name}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${safeName}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${email}">${email}</a></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Subject:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${subject}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${safeSubject}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Message:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${message}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${safeMessage}</td>
           </tr>
         </table>
-        <a href="mailto:${email}" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0;">Reply to ${name}</a>
+        <a href="mailto:${safeEmail}" style="background: #7C3AED; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 20px 0;">Reply to ${safeName}</a>
       </div>
     `,
-    text: `New contact form submission:\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
+    text: `New contact form submission:\n\nName: ${safeName}\nEmail: ${safeEmail}\nSubject: ${safeSubject}\nMessage: ${safeMessage}`,
   };
 }
 
 export function feedbackAdminNotification(email: string, type: string, message: string) {
+  const safeEmail = escapeHtml(email);
+  const safeType = escapeHtml(type);
+  const safeMessage = escapeHtml(message);
   return {
-    subject: `[LinkNest Feedback] ${type.charAt(0).toUpperCase() + type.slice(1)} Submission`,
+    subject: `[LinkNest Feedback] ${safeType.charAt(0).toUpperCase() + safeType.slice(1)} Submission`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #7C3AED;">New Feedback Submission</h1>
-        <p>A new ${type} has been submitted:</p>
+        <p>A new ${safeType} has been submitted:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 120px;">Email:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${email}">${email}</a></td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;"><a href="mailto:${safeEmail}">${safeEmail}</a></td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Type:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${type}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${safeType}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Message:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee;">${message}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${safeMessage}</td>
           </tr>
         </table>
       </div>
     `,
-    text: `New feedback submission:\n\nEmail: ${email}\nType: ${type}\nMessage: ${message}`,
+    text: `New feedback submission:\n\nEmail: ${safeEmail}\nType: ${safeType}\nMessage: ${safeMessage}`,
   };
 }
 

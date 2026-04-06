@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
     }
 
-    const linkUserId = await resolveLinkUserId(session.id as number);
+    const linkUserId = await resolveLinkUserId(session.userId as number);
 
     // Update positions in a transaction
     await db.transaction(async (tx) => {
