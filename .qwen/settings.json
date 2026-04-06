@@ -1,0 +1,22 @@
+{
+  "model": {
+    "name": "qwen/qwen3.6-plus:free"
+  },
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+    "ANTHROPIC_AUTH_TOKEN": "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",
+    "ANTHROPIC_API_KEY": ""
+  },
+  "$version": 3,
+  "permissions": {
+    "allow": [
+      "Bash(timeout *)",
+      "Bash(tasklist)",
+      "Bash(docker *)",
+      "Bash(docker-compose *)",
+      "Bash(node *)",
+      "Bash(taskkill *)",
+      "Bash(rmdir *)"
+    ]
+  }
+}
