@@ -37,12 +37,12 @@ export default function AccountDeletionPage() {
               </div>
               <h2 className="text-3xl font-black text-white tracking-tight">How to Delete</h2>
             </div>
-            
+
             <div className="space-y-8 text-slate-400 font-medium leading-relaxed">
               <p>To delete your LinkNest account, please follow these steps:</p>
               <ol className="list-decimal pl-6 space-y-6">
                 <li>
-                  <strong className="text-white">Log in</strong> to your LinkNest account at <Link href="/login" className="text-brand-primary hover:underline">linknest.com/login</Link>.
+                  <strong className="text-white">Log in</strong> to your LinkNest account at <Link href="/login" className="text-brand-primary hover:underline">linknest.tech/login</Link>.
                 </li>
                 <li>
                   Navigate to the <strong className="text-white">Settings</strong> tab in your dashboard.
@@ -57,7 +57,7 @@ export default function AccountDeletionPage() {
                   Confirm your decision by typing your username or password as prompted.
                 </li>
               </ol>
-              
+
               <div className="p-8 rounded-3xl bg-brand-primary/5 border border-brand-primary/20 flex items-start gap-4">
                 <AlertCircle className="w-6 h-6 text-brand-primary shrink-0 mt-1" />
                 <p className="text-sm text-slate-300">
@@ -74,7 +74,7 @@ export default function AccountDeletionPage() {
               </div>
               <h2 className="text-3xl font-black text-white tracking-tight">Data Retention</h2>
             </div>
-            
+
             <div className="space-y-6 text-slate-400 font-medium leading-relaxed">
               <p>
                 When you delete your account, we remove all personal information and content associated with your profile. However, some data may be retained for legal or administrative purposes:

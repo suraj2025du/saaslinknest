@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -66,7 +66,7 @@ function ResetPasswordForm() {
         <AlertCircle className="w-16 h-16 text-rose-500 mx-auto mb-6" />
         <h2 className="text-2xl font-black text-white mb-4">Invalid Link</h2>
         <p className="text-slate-400 mb-8">This password reset link is invalid or has expired.</p>
-        <Link 
+        <Link
           href="/forgot-password"
           className="inline-flex items-center gap-2 text-brand-primary font-black uppercase tracking-widest text-xs hover:underline"
         >
@@ -100,7 +100,7 @@ function ResetPasswordForm() {
             Your password has been reset. Redirecting you to login...
           </p>
           <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden relative">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 3 }}
@@ -114,9 +114,9 @@ function ResetPasswordForm() {
             <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-4">New Password</label>
             <div className="relative group">
               <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-brand-primary transition-colors" />
-              <input 
+              <input
                 required
-                type={showPassword ? 'text' : 'password'} 
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -136,9 +136,9 @@ function ResetPasswordForm() {
             <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-4">Confirm New Password</label>
             <div className="relative group">
               <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-brand-primary transition-colors" />
-              <input 
+              <input
                 required
-                type={showPassword ? 'text' : 'password'} 
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -154,7 +154,7 @@ function ResetPasswordForm() {
             </p>
           )}
 
-          <button 
+          <button
             disabled={isSubmitting}
             className="w-full py-5 rounded-2xl bg-brand-primary text-white font-black uppercase tracking-widest text-xs hover:bg-brand-primary/90 transition-all shadow-2xl flex items-center justify-center gap-3 disabled:opacity-50"
           >

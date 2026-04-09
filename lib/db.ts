@@ -12,10 +12,9 @@ if (!databaseUrl) {
   console.error('Please add DATABASE_URL to your secrets/env with the format: mysql://user:pass@host:port/db');
 }
 
-// mysql2 doesn't support 'sslmode' in the connection string and throws a warning.
-// However, its presence often indicates that SSL is required.
-const hasSslMode = databaseUrl?.includes('sslmode=');
-const cleanUri = databaseUrl?.replace(/(\?|&)sslmode=[^&]+/, '') || '';
+const hasSslMode = databaseUrl?.includes('sslmode=') || databaseUrl?.includes('ssl=');
+// Strip any query parameters because mysql2 can crash if JSON is embedded in the URI
+const cleanUri = databaseUrl?.split('?')[0] || '';
 
 // Diagnostic: Only run network tests in development to avoid production log noise
 if (cleanUri && process.env.NODE_ENV === 'development') {

@@ -120,8 +120,8 @@ function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-            ? 'bg-[#0B0F1A]/80 backdrop-blur-2xl border-b border-white/5 shadow-2xl shadow-black/20'
-            : 'bg-transparent'
+          ? 'bg-[#0B0F1A]/80 backdrop-blur-2xl border-b border-white/5 shadow-2xl shadow-black/20'
+          : 'bg-transparent'
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -259,7 +259,7 @@ const FAQ_CATEGORIES = [
     gradient: 'from-[#EC4899] to-[#7C3AED]',
     questions: [
       { q: 'What kind of support do you offer?', a: 'Starter users get access to our community forums and knowledge base. Pro users receive priority email support with guaranteed 24-hour response times. Business users get a dedicated account manager and live chat support.' },
-      { q: 'How do I contact support?', a: 'You can reach us via email at support@linknest.io, through the in-app chat widget, or by visiting our help center. Business users can also contact their dedicated account manager directly.' },
+      { q: 'How do I contact support?', a: 'You can reach us via email at support@linknest.tech, through the in-app chat widget, or by visiting our help center. Business users can also contact their dedicated account manager directly.' },
       { q: 'Do you offer onboarding help?', a: 'Yes! All new users get access to our interactive onboarding wizard. Business plan users also receive personalized onboarding with a dedicated specialist who helps set up your page, domains, and integrations.' },
     ],
   },

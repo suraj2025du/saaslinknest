@@ -1,15 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { newsletterSubscribers } from '@/lib/schema';
+import { newsletterSubscribers, users } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
 import { rateLimit, getIP } from '@/lib/rate-limit';
+import { getSession } from '@/lib/auth';
+
+// Helper: Check admin role
+async function requireAdmin() {
+  const session = await getSession();
+  if (!session?.userId) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.userId as number),
+  });
+
+  if (user?.role !== 'admin') {
+    return { error: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
+  }
+
+  return { userId: session.userId as number, user };
+}
 
 // GET: List all newsletter subscribers (admin only)
 export async function GET(req: NextRequest) {
   try {
-    // TODO: Add admin auth check
-    const subscribers = await db.select().from(newsletterSubscribers).orderBy(desc(newsletterSubscribers.subscribedAt));
-    return NextResponse.json({ success: true, subscribers });
+    // SECURITY: Admin auth check
+    const auth = await requireAdmin();
+    if ('error' in auth) return auth.error;
+
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = (page - 1) * limit;
+
+    const subscribers = await db
+      .select()
+      .from(newsletterSubscribers)
+      .orderBy(desc(newsletterSubscribers.subscribedAt))
+      .limit(limit)
+      .offset(offset);
+
+    return NextResponse.json({ success: true, subscribers, pagination: { page, limit } });
   } catch (error) {
     console.error('Newsletter fetch error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

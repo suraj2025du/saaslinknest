@@ -265,26 +265,27 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError('');
     try {
-      const res = await fetch('/api/auth/google/url');
-      const { url } = await res.json();
-      const authWindow = window.open(url, 'google_oauth_popup', 'width=600,height=700');
-      if (!authWindow) {
-        alert('Please allow popups for this site to login with Google.');
+      const { handleGoogleSignIn } = await import('@/lib/firebase-auth');
+      const result = await handleGoogleSignIn();
+
+      if (result.success) {
+        router.push('/dashboard');
+      } else {
+        setError(result.error || 'Failed to sign in with Google. Please try again.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Google login error:', err);
+      setError(err.message || 'Something went wrong with Google login. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        router.push('/dashboard');
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    // Firebase handles auth state automatically
   }, [router]);
 
   const handleKeyDown2FA = useCallback((e: React.KeyboardEvent) => {

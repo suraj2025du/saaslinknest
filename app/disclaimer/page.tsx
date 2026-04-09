@@ -88,7 +88,7 @@ export default function DisclaimerPage() {
               </p>
               <div className="p-8 rounded-3xl bg-white/5 border border-white/10 inline-block">
                 <p className="text-white font-black mb-2">LinkNest Legal Team</p>
-                <a href="mailto:legal@linknest.com" className="text-brand-secondary font-black hover:underline">legal@linknest.com</a>
+                <a href="mailto:legal@linknest.tech" className="text-brand-secondary font-black hover:underline">legal@linknest.tech</a>
                 <p className="mt-4 text-xs text-slate-500 font-bold uppercase tracking-widest">123 Creator Way, San Francisco, CA 94103</p>
               </div>
             </PolicySection>

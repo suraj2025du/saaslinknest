@@ -3,6 +3,7 @@ import './globals.css';
 import { CookieConsent } from '@/components/public/CookieConsent';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import { BugReportModal } from '@/components/BugReportModal';
+import { JsonLd } from '@/components/public/JsonLd';
 import { Suspense } from 'react';
 
 const inter = Inter({
@@ -16,40 +17,89 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://linkne.st'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://linknest.tech'),
   title: {
-    default: 'LinkNest — Smart Link-in-Bio for Creators',
+    default: 'LinkNest — Smart Link-in-Bio Platform for Creators & Businesses',
     template: '%s | LinkNest',
   },
-  description: 'The premium platform for sharing multiple links, tracking analytics, and customizing your creator identity. Create your personal hub in seconds.',
-  keywords: ['link in bio', 'creator platform', 'social media links', 'influencer tools', 'digital portfolio'],
-  authors: [{ name: 'LinkNest Team' }],
+  description: 'LinkNest is the premium link-in-bio platform for creators, influencers, and businesses. Share unlimited links, track analytics, customize your profile, and grow your audience all in one place.',
+  keywords: [
+    'link in bio',
+    'linknest',
+    'link in bio tool',
+    'creator platform',
+    'social media links',
+    'influencer tools',
+    'digital portfolio',
+    'bio link generator',
+    'link management',
+    'link tracking',
+    'content creator tools',
+    'Instagram link in bio',
+    'TikTok link in bio',
+    'Twitter link in bio',
+    'personal landing page',
+    'link shortener',
+    'analytics platform',
+  ],
+  authors: [{ name: 'LinkNest Team', url: 'https://linknest.tech' }],
+  creator: 'LinkNest',
+  publisher: 'LinkNest',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  verification: {
+    google: 'your-google-verification-code', // Add your Google Search Console verification code
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://linkne.st',
+    url: 'https://linknest.tech',
     siteName: 'LinkNest',
     title: 'LinkNest — Your Link-in-Bio, Reimagined',
-    description: 'Track, customize, and grow your presence with LinkNest. The only link-in-bio tool you ever need.',
-    images: [{
-      url: '/og-image.png',
-      width: 1200,
-      height: 630,
-      alt: 'LinkNest Platform Preview',
-    }],
+    description: 'The ultimate link-in-bio platform for creators and businesses. Share unlimited links, track clicks, and customize your profile. Join thousands of creators growing with LinkNest.',
+    images: [
+      {
+        url: 'https://linknest.tech/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'LinkNest - Smart Link-in-Bio Platform',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@linknest', // Add your Twitter handle
+    creator: '@linknest',
     title: 'LinkNest — Your Link-in-Bio, Reimagined',
-    description: 'Track, customize, and grow your presence with LinkNest.',
-    images: ['/og-image.png'],
+    description: 'Share unlimited links, track analytics, and customize your creator identity. The only link-in-bio tool you ever need.',
+    images: ['https://linknest.tech/og-image.png'],
   },
+  alternates: {
+    canonical: 'https://linknest.tech',
+  },
+  category: 'Technology',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans bg-surface-950 text-slate-200 selection:bg-brand-primary/30 antialiased overflow-x-hidden">
+        <JsonLd type="organization" />
+        <JsonLd type="website" />
         <Suspense fallback={null}>
           <AnalyticsTracker />
         </Suspense>

@@ -57,11 +57,11 @@ export const Footer = () => {
                 { icon: Twitter, href: '#' },
                 { icon: Instagram, href: '#' },
                 { icon: Github, href: '#' },
-                { icon: Mail, href: 'mailto:support@linknest.com' },
+                { icon: Mail, href: 'mailto:support@linknest.tech' },
               ].map((social, i) => (
-                <a 
-                  key={i} 
-                  href={social.href} 
+                <a
+                  key={i}
+                  href={social.href}
                   className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
                 >
                   <social.icon className="w-5 h-5" />
@@ -109,7 +109,7 @@ export const Footer = () => {
               <Link href="/cookies" className="hover:text-slate-400 transition-colors">Cookies</Link>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 text-xs font-black text-slate-600 uppercase tracking-widest">
               Made with <Heart className="w-3 h-3 text-brand-primary fill-brand-primary" /> for Creators

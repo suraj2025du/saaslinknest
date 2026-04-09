@@ -8,6 +8,11 @@ import PublicProfileClient from '@/components/public/PublicProfileClient';
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await params;
 
+  // Prevent generic file requests (like favicon.ico, .png, etc) from hitting the database
+  if (username.includes('.')) {
+    return { title: 'Profile Not Found' };
+  }
+
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.username, username),
   });
@@ -44,6 +49,11 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 
 export default async function PublicProfile({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
+
+  // Prevent generic file requests (like favicon.ico, .png, etc) from hitting the database
+  if (username.includes('.')) {
+    notFound();
+  }
 
   const profile = await db.query.profiles.findFirst({
     where: eq(profiles.username, username),

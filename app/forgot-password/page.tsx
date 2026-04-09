@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Mail, ArrowLeft, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -47,8 +47,8 @@ export default function ForgotPasswordPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-slate-900 border border-white/10 p-10 rounded-[3rem] shadow-2xl relative"
       >
-        <Link 
-          href="/login" 
+        <Link
+          href="/login"
           className="inline-flex items-center gap-2 text-slate-500 hover:text-white transition-colors text-xs font-black uppercase tracking-widest mb-8 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
             <p className="text-slate-400 text-sm mb-8 leading-relaxed">
               If an account exists with that email, you&apos;ll receive a password reset link shortly.
             </p>
-            <Link 
+            <Link
               href="/login"
               className="block w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all shadow-xl"
             >
@@ -88,9 +88,9 @@ export default function ForgotPasswordPage() {
               <label className="text-xs font-black uppercase tracking-widest text-slate-500 ml-4">Email Address</label>
               <div className="relative group">
                 <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-brand-primary transition-colors" />
-                <input 
+                <input
                   required
-                  type="email" 
+                  type="email"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
               </p>
             )}
 
-            <button 
+            <button
               disabled={isSubmitting}
               className="w-full py-5 rounded-2xl bg-brand-primary text-white font-black uppercase tracking-widest text-xs hover:bg-brand-primary/90 transition-all shadow-2xl shadow-brand-primary/30 flex items-center justify-center gap-3 disabled:opacity-50"
             >

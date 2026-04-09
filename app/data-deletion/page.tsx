@@ -37,7 +37,7 @@ export default function DataDeletionPage() {
               </div>
               <h2 className="text-3xl font-black text-white tracking-tight">Your Data Rights</h2>
             </div>
-            
+
             <div className="space-y-8 text-slate-400 font-medium leading-relaxed">
               <p>
                 Under GDPR and other privacy regulations, you have the right to request the deletion of your personal data. We provide two ways to exercise this right:
@@ -54,14 +54,14 @@ export default function DataDeletionPage() {
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
-                
+
                 <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
                   <h4 className="text-white font-black mb-2 flex items-center gap-2">
                     <Mail className="w-4 h-4 text-brand-secondary" />
                     Manual Request
                   </h4>
                   <p className="text-sm text-slate-500 mb-6">Submit a request to our privacy team to delete your data manually.</p>
-                  <a href="mailto:privacy@linknest.com" className="text-brand-secondary font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:underline">
+                  <a href="mailto:privacy@linknest.tech" className="text-brand-secondary font-black uppercase tracking-widest text-[10px] flex items-center gap-2 hover:underline">
                     Email Privacy Team
                     <ArrowRight className="w-4 h-4" />
                   </a>
@@ -77,7 +77,7 @@ export default function DataDeletionPage() {
               </div>
               <h2 className="text-3xl font-black text-white tracking-tight">What We Delete</h2>
             </div>
-            
+
             <div className="space-y-6 text-slate-400 font-medium leading-relaxed">
               <p>
                 When you submit a data deletion request, we will remove the following information from our active databases:

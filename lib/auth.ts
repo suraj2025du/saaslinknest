@@ -45,7 +45,7 @@ export async function setSession(payload: any) {
   const cookieStore = await cookies();
   cookieStore.set('session', token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production', // Only use secure in production, not localhost
     sameSite: 'lax', // Changed from 'none' to prevent CSRF
     path: '/',
     maxAge: 60 * 60 * 24 * 30, // 30 days

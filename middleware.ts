@@ -11,13 +11,15 @@ const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
-  // Add security headers
-  response.headers.set('X-Frame-Options', 'DENY');
+  // Add security headers (consistent with next.config.ts)
+  // Note: Some headers are set in next.config.ts for static files
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';");
+  // CSP allows inline styles/scripts for Next.js to work
+  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.gstatic.com https://*.firebaseapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss:; frame-ancestors 'none'; frame-src 'self' https://linknest-4d873.firebaseapp.com;");
 
   const token = request.cookies.get('session')?.value;
 

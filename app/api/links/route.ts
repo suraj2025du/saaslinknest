@@ -99,6 +99,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Title and URL are required' }, { status: 400 });
     }
 
+    // SECURITY: Validate URL format and block dangerous protocols
+    try {
+      const parsedUrl = new URL(url);
+      const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+      if (!allowedProtocols.includes(parsedUrl.protocol)) {
+        return NextResponse.json(
+          { error: 'Invalid URL protocol. Only http, https, mailto, and tel are allowed' },
+          { status: 400 }
+        );
+      }
+      // Block javascript: and data: URLs to prevent XSS
+      if (parsedUrl.protocol === 'javascript:' || parsedUrl.protocol === 'data:') {
+        return NextResponse.json(
+          { error: 'Invalid URL protocol' },
+          { status: 400 }
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid URL format. Please provide a valid URL with protocol (http:// or https://)' },
+        { status: 400 }
+      );
+    }
+
+    // Validate title length
+    if (title.length > 200) {
+      return NextResponse.json(
+        { error: 'Title must be less than 200 characters' },
+        { status: 400 }
+      );
+    }
+
     // Validate schedule dates if provided
     if (scheduledAt && isNaN(new Date(scheduledAt).getTime())) {
       return NextResponse.json({ error: 'Invalid scheduledAt date format' }, { status: 400 });

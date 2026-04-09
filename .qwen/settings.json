@@ -10,7 +10,11 @@
       "Bash(dir *)",
       "Bash(powershell *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(node *)",
+      "Bash(copy *)",
+      "Bash(npm install *)",
+      "Bash(npx *)"
     ]
   },
   "$version": 3

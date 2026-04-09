@@ -96,7 +96,7 @@ export default function RefundPolicyPage() {
               </p>
               <div className="p-8 rounded-3xl bg-white/5 border border-white/10 inline-block">
                 <p className="text-white font-black mb-2">LinkNest Billing Team</p>
-                <a href="mailto:billing@linknest.com" className="text-brand-primary font-black hover:underline">billing@linknest.com</a>
+                <a href="mailto:billing@linknest.tech" className="text-brand-primary font-black hover:underline">billing@linknest.tech</a>
                 <p className="mt-4 text-xs text-slate-500 font-bold uppercase tracking-widest">123 Creator Way, San Francisco, CA 94103</p>
               </div>
             </PolicySection>

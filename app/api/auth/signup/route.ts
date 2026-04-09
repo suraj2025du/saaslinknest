@@ -41,6 +41,14 @@ export async function POST(req: Request) {
     });
 
     const userId = result.insertId;
+
+    // Create user profile with username
+    const username = email.split('@')[0];
+    await db.insert(profiles).values({
+      userId: userId,
+      username: username,
+    });
+
     await setSession({ userId, email, role: 'user' });
 
     // Send welcome email (fire and forget)

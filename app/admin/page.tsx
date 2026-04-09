@@ -4,6 +4,9 @@ import { count, eq, sum, sql } from 'drizzle-orm';
 import Link from 'next/link';
 import { Users, DollarSign, CreditCard, TrendingUp, MessageSquare, Mail, ArrowRight, Zap } from 'lucide-react';
 
+// Force dynamic rendering to prevent build-time database access errors
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const totalUsers = await db.select({ count: count() }).from(users);
   const activeSubs = await db.select({ count: count() }).from(subscriptions).where(eq(subscriptions.status, 'active'));

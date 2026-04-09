@@ -73,7 +73,7 @@ export default function CookiePolicyPage() {
                   </h4>
                   <p className="text-sm text-slate-400">These cookies are strictly necessary to provide you with services available through our platform and to use some of its features, such as access to secure areas.</p>
                 </div>
-                
+
                 <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
                   <h4 className="text-white font-black mb-2 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-brand-secondary" />
@@ -107,7 +107,7 @@ export default function CookiePolicyPage() {
               </p>
               <div className="p-8 rounded-3xl bg-white/5 border border-white/10 inline-block">
                 <p className="text-white font-black mb-2">LinkNest Privacy Team</p>
-                <a href="mailto:privacy@linknest.com" className="text-brand-accent font-black hover:underline">privacy@linknest.com</a>
+                <a href="mailto:privacy@linknest.tech" className="text-brand-accent font-black hover:underline">privacy@linknest.tech</a>
                 <p className="mt-4 text-xs text-slate-500 font-bold uppercase tracking-widest">123 Creator Way, San Francisco, CA 94103</p>
               </div>
             </PolicySection>

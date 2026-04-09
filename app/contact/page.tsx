@@ -6,7 +6,7 @@ import { Mail, MessageSquare, Twitter, Instagram, Github, Globe, MapPin, Send, A
 import { useState } from 'react';
 import Link from 'next/link';
 
-const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@linknest.com';
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@linknest.tech';
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);

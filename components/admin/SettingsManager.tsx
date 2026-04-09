@@ -5,7 +5,7 @@ import { Save, Settings2, ToggleLeft, ToggleRight } from 'lucide-react';
 export default function SettingsManager() {
   const [settings, setSettings] = useState({
     siteName: 'LinkNest',
-    supportEmail: 'support@linknest.com',
+    supportEmail: 'support@linknest.tech',
     maintenanceMode: false,
     allowSignup: true,
     emailVerification: true,

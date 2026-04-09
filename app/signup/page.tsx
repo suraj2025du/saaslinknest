@@ -527,14 +527,17 @@ export default function SignupPage() {
             label="Google Account"
             onClick={async () => {
               try {
-                const res = await fetch('/api/auth/google/url');
-                const { url } = await res.json();
-                const authWindow = window.open(url, 'google_oauth_popup', 'width=600,height=700');
-                if (!authWindow) {
-                  alert('Please allow popups for this site to sign up with Google.');
+                const { handleGoogleSignIn } = await import('@/lib/firebase-auth');
+                const result = await handleGoogleSignIn();
+
+                if (result.success) {
+                  router.push('/dashboard');
+                } else {
+                  setError(result.error || 'Failed to sign up with Google.');
                 }
-              } catch (err) {
+              } catch (err: any) {
                 console.error('Google signup error:', err);
+                setError(err.message || 'Something went wrong.');
               }
             }}
           />
