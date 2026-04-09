@@ -7,7 +7,7 @@ console.log("🚀 LinkNest Database Force Installer");
 console.log("=====================================\n");
 
 async function run() {
-  const liveDbUrl = 'mysql://4Fxmi6opzQhfZTf.root:v9cX10X2B7g1oEZs@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/fortune500';
+  const liveDbUrl = 'mysql://4Fxmi6opzQhfZTf.root:gekmFuuxqdQW2Epo@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/fortune500';
 
   console.log("1. Generating SQL locally...");
   // Set fake DB URL just to satisfy config
