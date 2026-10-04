@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Cookie, Shield } from 'lucide-react';
 import { acceptCookies, declineCookies, shouldShowBanner } from '@/lib/cookieConsent';
 import Link from 'next/link';
@@ -10,9 +10,12 @@ export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (shouldShowBanner()) {
-      setIsVisible(true);
-    }
+    const timer = setTimeout(() => {
+      if (shouldShowBanner()) {
+        setIsVisible(true);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleAccept = () => {
@@ -29,6 +32,7 @@ export function CookieConsent() {
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          key="cookie-consent-banner"
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}

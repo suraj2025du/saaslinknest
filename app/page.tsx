@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Particles } from '@/components/public/Particles';
 import {
   motion,
   useScroll,
@@ -94,49 +95,6 @@ function FloatingOrb({ className, delay = 0 }: { className: string; delay?: numb
 }
 
 /* ------------------------------------------------------------------ */
-/*  Particle field
-/* ------------------------------------------------------------------ */
-function Particles() {
-  const particles = Array.from({ length: 40 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 3 + 1,
-    duration: Math.random() * 6 + 4,
-    delay: Math.random() * 4,
-    opacity: Math.random() * 0.4 + 0.1,
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full bg-white"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            opacity: p.opacity,
-          }}
-          animate={{
-            y: [0, -80, 0],
-            opacity: [p.opacity, p.opacity * 0.3, p.opacity],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: p.delay,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Navbar
 /* ------------------------------------------------------------------ */
 function Navbar() {
@@ -214,6 +172,7 @@ function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            key="home-mobile-menu-drawer"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquarePlus, X, Send, AlertCircle, CheckCircle2, Upload, Image as ImageIcon, FileText, Lightbulb, Bug } from 'lucide-react';
 
 type FeedbackType = 'bug' | 'feature_request' | 'feedback';
@@ -84,7 +84,7 @@ export function BugReportModal() {
   ];
 
   return (
-    <>
+    <div id="bug-report-modal-root">
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 w-12 h-12 bg-brand-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-40 group"
@@ -95,8 +95,9 @@ export function BugReportModal() {
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 pointer-events-none">
+          <div key="bug-report-backdrop-wrapper" className="fixed inset-0 z-50 flex items-center justify-center px-4 pointer-events-none">
             <motion.div
+              key="bug-report-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -105,6 +106,7 @@ export function BugReportModal() {
             />
 
             <motion.div
+              key="bug-report-dialog"
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -246,6 +248,6 @@ export function BugReportModal() {
           </div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }

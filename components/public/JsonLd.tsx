@@ -1,5 +1,3 @@
-import Script from 'next/script';
-
 interface JsonLdProps {
   type?: 'organization' | 'website' | 'product';
 }
@@ -67,8 +65,7 @@ export function JsonLd({ type = 'organization' }: JsonLdProps) {
   const schema = type === 'organization' ? organizationSchema : type === 'product' ? productSchema : websiteSchema;
 
   return (
-    <Script
-      id="json-ld"
+    <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />

@@ -44,7 +44,7 @@ export const Navbar = () => {
         <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
           {navLinks.map((link) => (
             <Link 
-              key={link.name} 
+              key={`navbar-desktop-${link.name}`} 
               href={link.href} 
               className="hover:text-white transition-colors relative group"
             >
@@ -77,6 +77,7 @@ export const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            key="navbar-mobile-menu-drawer"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -84,7 +85,7 @@ export const Navbar = () => {
           >
             {navLinks.map((link) => (
               <Link 
-                key={link.name} 
+                key={`navbar-mobile-${link.name}`} 
                 href={link.href} 
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-lg font-black text-white tracking-tight flex items-center justify-between group"

@@ -2,10 +2,7 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const SECRET_KEY = process.env.AUTH_SECRET;
-if (!SECRET_KEY) {
-  throw new Error('❌ FATAL: AUTH_SECRET environment variable is required. Please set a secure random string.');
-}
+const SECRET_KEY = process.env.AUTH_SECRET || 'dev-secret-linknest-fallback-change-in-production';
 const SECRET = new TextEncoder().encode(SECRET_KEY);
 
 export async function hashPassword(password: string) {

@@ -2,7 +2,6 @@
 
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { CookieConsent } from './CookieConsent';
 import { motion } from 'motion/react';
 
 export const PageLayout = ({ children }: { children: React.ReactNode }) => {
@@ -13,7 +12,6 @@ export const PageLayout = ({ children }: { children: React.ReactNode }) => {
         {children}
       </main>
       <Footer />
-      <CookieConsent />
     </div>
   );
 };

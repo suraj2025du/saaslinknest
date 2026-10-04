@@ -54,13 +54,13 @@ export const Footer = () => {
             </p>
             <div className="flex items-center gap-4">
               {[
-                { icon: Twitter, href: '#' },
-                { icon: Instagram, href: '#' },
-                { icon: Github, href: '#' },
-                { icon: Mail, href: 'mailto:support@linknest.tech' },
-              ].map((social, i) => (
+                { icon: Twitter, href: '#', name: 'twitter' },
+                { icon: Instagram, href: '#', name: 'instagram' },
+                { icon: Github, href: '#', name: 'github' },
+                { icon: Mail, href: 'mailto:support@linknest.tech', name: 'mail' },
+              ].map((social) => (
                 <a
-                  key={i}
+                  key={`footer-social-${social.name}`}
                   href={social.href}
                   className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
                 >
@@ -75,7 +75,7 @@ export const Footer = () => {
             <h4 className="text-white font-black text-xs uppercase tracking-[0.2em]">Product</h4>
             <div className="flex flex-col gap-4 text-sm font-bold text-slate-500">
               {footerLinks.product.map((link) => (
-                <Link key={link.name} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
+                <Link key={`footer-prod-${link.name}`} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
               ))}
             </div>
           </div>
@@ -84,7 +84,7 @@ export const Footer = () => {
             <h4 className="text-white font-black text-xs uppercase tracking-[0.2em]">Company</h4>
             <div className="flex flex-col gap-4 text-sm font-bold text-slate-500">
               {footerLinks.company.map((link) => (
-                <Link key={link.name} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
+                <Link key={`footer-comp-${link.name}`} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
               ))}
             </div>
           </div>
@@ -93,7 +93,7 @@ export const Footer = () => {
             <h4 className="text-white font-black text-xs uppercase tracking-[0.2em]">Legal</h4>
             <div className="flex flex-col gap-4 text-sm font-bold text-slate-500">
               {footerLinks.legal.map((link) => (
-                <Link key={link.name} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
+                <Link key={`footer-legal-${link.name}`} href={link.href} className="hover:text-white transition-colors">{link.name}</Link>
               ))}
             </div>
           </div>

@@ -3,7 +3,6 @@ import './globals.css';
 import { CookieConsent } from '@/components/public/CookieConsent';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import { BugReportModal } from '@/components/BugReportModal';
-import { JsonLd } from '@/components/public/JsonLd';
 import { Suspense } from 'react';
 
 const inter = Inter({
@@ -18,11 +17,8 @@ const outfit = Outfit({
 
 export const metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://linknest.tech'),
-  title: {
-    default: 'LinkNest — Smart Link-in-Bio Platform for Creators & Businesses',
-    template: '%s | LinkNest',
-  },
-  description: 'LinkNest is the premium link-in-bio platform for creators, influencers, and businesses. Share unlimited links, track analytics, customize your profile, and grow your audience all in one place.',
+  title: 'LinkNest',
+  description: 'Smart Link-in-Bio Platform for creators and businesses.',
   keywords: [
     'link in bio',
     'linknest',
@@ -69,8 +65,8 @@ export const metadata = {
     locale: 'en_US',
     url: 'https://linknest.tech',
     siteName: 'LinkNest',
-    title: 'LinkNest — Your Link-in-Bio, Reimagined',
-    description: 'The ultimate link-in-bio platform for creators and businesses. Share unlimited links, track clicks, and customize your profile. Join thousands of creators growing with LinkNest.',
+    title: 'LinkNest',
+    description: 'Smart Link-in-Bio Platform for creators and businesses.',
     images: [
       {
         url: 'https://linknest.tech/og-image.png',
@@ -98,8 +94,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans bg-surface-950 text-slate-200 selection:bg-brand-primary/30 antialiased overflow-x-hidden">
-        <JsonLd type="organization" />
-        <JsonLd type="website" />
         <Suspense fallback={null}>
           <AnalyticsTracker />
         </Suspense>
